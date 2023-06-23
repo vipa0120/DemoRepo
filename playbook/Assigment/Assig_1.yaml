@@ -1,0 +1,45 @@
+---
+- hosts: localhost
+  gather_facts: true
+  
+  tasks:
+  - name: OS type checking
+    shell:
+     cmd: grep "CentOS" /etc/os-release
+    register: OS_Type
+  
+  - name: checking HTTPD servie installed or not
+    shell:
+     cmd: service httpd status | grep "Active"
+    register: httpd_status
+    ignore_errors: true
+
+  - block: 
+    - name: Uninstalling HTTPD
+      yum:
+       name: httpd
+       state: absent
+    - name: Installing HTTPD 
+      yum:
+       name: httpd
+       state: present
+      when: httpd_status.rc == 0 
+
+    - name: Ansible found, HTTPD not installed in this server. So intalling this.
+      yum:
+       name: httpd
+       state: present
+      when: httpd_status.rc != 0
+    
+    when: OS_Type.rc == 0
+ 
+    rescue:
+    - name: Printing error message
+      debug:
+       msg: "Something wrong"
+
+    always:
+    - name: Starting HTTP Service
+      service:
+       name: httpd
+       state: started

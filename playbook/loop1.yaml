@@ -1,0 +1,18 @@
+---
+- hosts: localhost
+  gather_facts: true
+  become: true
+  vars:
+   source_path: /root/Source
+   destination_path: /root/Dest 
+  tasks:
+  - name: copey file while using loop
+    copy:
+     src: "{{ source_path }}/{{ item.so_file }}"
+     dest: "{{ destination_path }}/{{ item.Dest_file }}"
+    with_items:
+     - {so_file: 'File.txt', Dest_file: '1'}
+     - {so_file: 'File1.txt', Dest_file: '2'}
+     
+   
+     

@@ -1,0 +1,19 @@
+---
+- hosts: localhost
+  gather_facts: true
+
+  tasks:
+  - name: condional ansible script
+    shell:
+     cmd: ls -lrt | wc -l
+     chdir: /root/Source
+    register: count
+
+  - name: priting count value
+    debug:
+     msg: count value is  "{{count.stdout}}"
+
+  - name: copare the list of file
+    fail:
+      msg: comparison fail.
+    when: count.stdout == '4'

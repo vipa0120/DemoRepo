@@ -1,0 +1,16 @@
+---
+- hosts: localhost
+  gather_facts: false
+  tasks:
+  - name: unsinatlling vim editor
+    yum:
+     name: vim
+     state: absent
+
+  - name : installing vim and httpd services
+    yum:
+     name: "{{ item }}"
+     state: present
+    with_items:
+     - vim
+     - httpd

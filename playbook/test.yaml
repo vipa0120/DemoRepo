@@ -1,0 +1,26 @@
+---
+- name: testing copy module
+  hosts: localhost
+  gather_facts: true
+  vars:
+   Source: /root/Source/
+   Destination: /root/Dest
+   file_name: File.txt
+  tasks:
+  - name: Copying file from Source  to Destination path
+    copy:
+     src: "{{ Source }}/{{ file_name }}"
+     dest: "{{ Destination }}"
+
+  - name: verifying copy module
+    stat:
+     path: "{{ Destination }}/{{ file_name }}" 
+    register: output
+
+  - name: printing output message
+    debug:      
+     msg: "{{ output }}"
+
+  - name: assigning value to variable
+    set_fact:
+     checksum_of_value: "{{ output.stat.checksum }}" 

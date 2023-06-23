@@ -1,0 +1,30 @@
+---
+- hosts: localhost
+  gather_facts: true
+  
+  tasks:
+  - name: OS type checking
+    shell:
+     cmd: grep "CentOS" /etc/os-release
+    register: OS_Type
+  
+  - name: checking HTTPD servie installed or not
+    shell:
+     cmd: service httpd status
+    register: httpd_status
+    ignore_errors: true
+
+ - name: If HTTPD service already installed, then this taks will uninstall.
+   yum:
+    name: httpd
+    state: absent
+   when: httpd_status.rc == 0 and OS_Type.rc == 0
+
+
+  - name: if HTTPD not installed , then this task will installed.
+    yum:
+     name: httpd
+     state: present
+    when: httpd_status.rc != 0 and OS_Type.rc == 0
+
+        
