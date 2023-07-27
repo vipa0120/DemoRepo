@@ -1,0 +1,188 @@
+---
+kind: Deployment
+  {{ if and ( eq .Values.PAAS_PLATFORM "OPENSHIFT" ) ( eq .Values.PAAS_VERSION "v1.5" ) }}
+apiVersion: extensions/v1beta1
+  {{ else }}
+apiVersion: apps/v1
+  {{ end }}
+metadata:
+    name: "{{ .Values.SERVICE_NAME }}"
+    labels:
+      name: '{{ .Values.SERVICE_NAME }}'
+      app.kubernetes.io/name: '{{ .Values.SERVICE_NAME }}'
+      app.kubernetes.io/instance: '{{ cat .Values.SERVICE_NAME "-" .Values.NAMESPACE | nospace | trunc 63 }}'
+      app.kubernetes.io/version: '{{ .Values.ARTIFACT_DESCRIPTOR_VERSION }}'
+      app.kubernetes.io/component: 'backend'
+      app.kubernetes.io/part-of: 'Cloud-Core'
+      app.kubernetes.io/managed-by: 'helm'
+    annotations:
+        netcracker.cloud/start.stage: '0'
+spec:
+    selector:
+        matchLabels:
+          name: '{{ .Values.SERVICE_NAME }}'
+    replicas: {{ .Values.REPLICAS | default 1 }}
+    revisionHistoryLimit: 3
+    strategy:
+        type: RollingUpdate
+        rollingUpdate:
+            maxUnavailable: 25%
+            maxSurge: 25%
+    template:
+        metadata:
+            labels:
+              name: '{{ .Values.SERVICE_NAME }}'
+              app.kubernetes.io/name: '{{ .Values.SERVICE_NAME }}'
+              app.kubernetes.io/instance: '{{ cat .Values.SERVICE_NAME "-" .Values.NAMESPACE | nospace | trunc 63 }}'
+              app.kubernetes.io/version: '{{ .Values.ARTIFACT_DESCRIPTOR_VERSION }}'
+              app.kubernetes.io/component: 'backend'
+              app.kubernetes.io/part-of: 'Cloud-Core'
+              app.kubernetes.io/managed-by: 'helm'
+        spec:
+            serviceAccountName: "{{ .Values.SERVICE_NAME }}"
+            volumes:
+                - name: client-credentials
+                  secret:
+                      secretName: "{{ .Values.SERVICE_NAME }}-client-credentials"
+{{ if .Values.INTERNAL_TLS_ENABLED }}
+                - name: tls
+                  secret:
+                      secretName: '{{ .Values.SERVICE_NAME }}-tls'
+{{ end }}
+                - name: '{{ .Values.SSL_SECRET }}'
+                  secret:
+                      secretName: '{{ .Values.SSL_SECRET }}'
+            containers:
+                - name: "{{ .Values.SERVICE_NAME }}"
+                  image: "{{ .Values.IMAGE_REPOSITORY }}:{{ .Values.TAG }}"
+                  args:
+                      - /app/key-manager
+                  ports:
+                      - name: web
+                        containerPort: 8080
+                        protocol: TCP
+                      - name: tls
+                        containerPort: 8443
+                        protocol: TCP
+                  env:
+                      - name: CERTIFICATE_BUNDLE_{{ .Values.SSL_SECRET}}_MD5SUM
+                        value: "{{ .Values.CERTIFICATE_BUNDLE_MD5SUM }}"
+                      - name: MICROSERVICE_NAMESPACE
+                        valueFrom:
+                            fieldRef:
+                                fieldPath: metadata.namespace
+                      - name: LOG_LEVEL
+                        value: '{{ .Values.LOG_LEVEL }}'
+                      - name: PAAS_PLATFORM
+                        value: "{{ .Values.PAAS_PLATFORM }}"
+                      - name: PAAS_VERSION
+                        value: "{{ .Values.PAAS_VERSION}}"
+                      - name: INTERNAL_TLS_ENABLED
+                        value: '{{ .Values.INTERNAL_TLS_ENABLED }}'
+{{ if .Values.INTERNAL_TLS_ENABLED }}
+                      - name: CERTIFICATE_FILE_PASSWORD
+                        valueFrom:
+                          secretKeyRef:
+                            name: 'tls-password-secret'
+                            key: 'tls-password'
+                      - name: CERTIFICATE_FILE_PATH
+                        value: '/etc/tls'
+{{ end }}
+                      - name: VAULT_ADDR
+                        value: '{{ .Values.VAULT_ADDR }}'
+                      - name: M2MType
+                        value: '{{ .Values.M2MType }}'
+                      - name: CLOUD_API_HOST
+                        value: '{{ .Values.CLOUD_API_HOST }}'
+                      - name: CLOUD_API_PORT
+                        value: '{{ .Values.CLOUD_API_PORT }}'
+                      - name: CLOUD_PROTOCOL
+                        value: '{{ .Values.CLOUD_PROTOCOL }}'
+                      - name: VAULT_INTEGRATION
+                        value: '{{ .Values.VAULT_INTEGRATION }}'
+                      - name: CLOUD_PUBLIC_HOST
+                        value: '{{ .Values.CLOUD_PUBLIC_HOST }}'
+                      - name: CONSUL_ENABLED
+                        value: '{{ .Values.CONSUL_ENABLED | default false }}'
+                  {{ if .Values.CONSUL_ENABLED }}
+                      - name: CONSUL_URL
+                        value: '{{ .Values.CONSUL_URL }}'
+                      - name: CONSUL_TOKEN
+                        valueFrom:
+                          secretKeyRef:
+                            name: key-manager-consul-token
+                            key: token
+                  {{ end }}
+                      - name: TRACING_ENABLED
+                        value: '{{ .Values.TRACING_ENABLED }}'
+                      - name: TRACING_HOST
+                        value: '{{ .Values.TRACING_HOST }}'
+                      - name: TRACING_SAMPLER_RATELIMITING
+                        value: '{{ .Values.TRACING_SAMPLER_RATELIMITING }}'
+                  resources:
+                      requests:
+                          cpu: "{{ .Values.CPU_REQUEST}}"
+                          memory: "{{ .Values.MEMORY_LIMIT}}"
+                      limits:
+                          memory: "{{ .Values.MEMORY_LIMIT}}"
+                          cpu: "{{ .Values.CPU_LIMIT }}"
+                  livenessProbe:
+                      httpGet:
+                          path: /health
+                          port: {{ if .Values.INTERNAL_TLS_ENABLED }} tls {{ else }} web {{ end }}
+                          scheme: {{ if .Values.INTERNAL_TLS_ENABLED }} HTTPS {{ else }} HTTP {{ end }}
+                      initialDelaySeconds: {{ .Values.keyManager.livenessProbe.initialDelaySeconds}}
+                      timeoutSeconds: {{ .Values.keyManager.livenessProbe.timeoutSeconds}}
+                  readinessProbe:
+                      httpGet:
+                          path: /health
+                          port: {{ if .Values.INTERNAL_TLS_ENABLED }} tls {{ else }} web {{ end }}
+                          scheme: {{ if .Values.INTERNAL_TLS_ENABLED }} HTTPS {{ else }} HTTP {{ end }}
+                      initialDelaySeconds: {{ .Values.keyManager.readinessProbe.initialDelaySeconds}}
+                      timeoutSeconds: {{ .Values.keyManager.readinessProbe.timeoutSeconds}}
+                  securityContext:
+{{ if eq .Values.PAAS_PLATFORM "KUBERNETES" }}
+                      runAsUser: 10001
+                      runAsGroup: 10001
+                      runAsNonRoot: true
+                      seccompProfile:
+                          type: RuntimeDefault
+                      allowPrivilegeEscalation: false
+                      capabilities:
+                          drop:
+                            - ALL
+{{ end }}
+                      readOnlyRootFilesystem: {{ .Values.READONLY_CONTAINER_FILE_SYSTEM_ENABLED }}
+                  volumeMounts:
+                      - name: client-credentials
+                        mountPath: "/etc/secret"
+                        readOnly: true
+{{ if .Values.INTERNAL_TLS_ENABLED }}
+                      - name: tls
+                        mountPath: '/etc/tls'
+                        readOnly: true
+{{ end }}
+                      - name: '{{ .Values.SSL_SECRET }}'
+                        mountPath: /tmp/cert/{{ .Values.SSL_SECRET }}
+  {{- if or (and (eq (semver .Values.PAAS_VERSION | (semver "1.18").Compare) 1) (eq .Values.PAAS_PLATFORM "KUBERNETES")) (and (eq (semver .Values.PAAS_VERSION | (semver "4.6").Compare) 1) (eq .Values.PAAS_PLATFORM "OPENSHIFT")) }}  # k8s older than 1.18 OR openshift version older than 4.6
+            affinity:
+                podAntiAffinity:
+                    preferredDuringSchedulingIgnoredDuringExecution:
+                        - weight: 100
+                          podAffinityTerm:
+                              labelSelector:
+                                  matchExpressions:
+                                      - key: name
+                                        operator: In
+                                        values:
+                                            - "{{ .Values.SERVICE_NAME }}"
+                              topologyKey: "{{ .Values.CLOUD_TOPOLOGY_KEY }}"
+  {{ else }}
+            topologySpreadConstraints:
+              - maxSkew: 1
+                topologyKey: "{{ .Values.CLOUD_TOPOLOGY_KEY }}"
+                whenUnsatisfiable: ScheduleAnyway
+                labelSelector:
+                  matchLabels:
+                    name: "{{ .Values.SERVICE_NAME }}"
+  {{ end }}

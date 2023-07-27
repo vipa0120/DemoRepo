@@ -1,0 +1,26 @@
+{{ if .Values.MONITORING_ENABLED }}
+---
+kind: ServiceMonitor
+apiVersion: monitoring.coreos.com/v1
+metadata:
+  name: '{{ .Values.SERVICE_NAME }}-service-monitor'
+  labels:
+    k8s-app: '{{ .Values.SERVICE_NAME }}-service-monitor'
+    app.kubernetes.io/name: '{{ .Values.SERVICE_NAME }}-service-monitor'
+    app.kubernetes.io/component: monitoring
+    app.kubernetes.io/part-of: platform-monitoring
+    app.kubernetes.io/managed-by: platform-monitoring-operator
+spec:
+  endpoints:
+    - interval: 30s
+      port: web
+      scheme: {{ if .Values.INTERNAL_TLS_ENABLED }} https {{ else }} http {{ end }}
+      path: "/prometheus"
+  jobLabel: k8s-app
+  namespaceSelector:
+    matchNames:
+      - '{{ .Values.NAMESPACE }}'
+  selector:
+    matchLabels:
+      name: '{{ .Values.SERVICE_NAME }}-internal'
+  {{ end }}

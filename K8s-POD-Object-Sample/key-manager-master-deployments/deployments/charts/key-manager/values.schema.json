@@ -1,0 +1,393 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "title": "The key-manager schema",
+  "description": "The JSON schema for key-manager.",
+  "default": {},
+  "examples": [
+    {
+      "PAAS_PLATFORM": "KUBERNETES",
+      "PAAS_VERSION": "",
+      "CERTIFICATE_BUNDLE_MD5SUM": "d41d8cd98f00b204e9800998ecf8427e",
+      "CPU_REQUEST": "100m",
+      "CPU_LIMIT": "1",
+      "IMAGE_REPOSITORY": "",
+      "MEMORY_LIMIT": "200Mi",
+      "SERVICE_NAME": "key-manager",
+      "SSL_SECRET": "defaultsslcertificate",
+      "NAMESPACE": "",
+      "MONITORING_ENABLED": false,
+      "TAG": "",
+      "ARTIFACT_DESCRIPTOR_VERSION": "",
+      "REPLICAS": 1,
+      "VAULT_ADDR": "",
+      "M2MType": "keycloak",
+      "LOG_LEVEL": "info",
+      "CLOUD_API_HOST": "",
+      "CLOUD_API_PORT": "6443",
+      "CLOUD_PROTOCOL": "https",
+      "CLOUD_PUBLIC_HOST": "",
+      "VAULT_INTEGRATION": false,
+      "TRACING_ENABLED": false,
+      "TRACING_HOST": "nc-diagnostic-agent",
+      "TRACING_SAMPLER_RATELIMITING": 10,
+      "CLOUD_TOPOLOGY_KEY": "kubernetes.io/hostname",
+      "keyManager": {
+        "readinessProbe": {
+          "initialDelaySeconds": 5,
+          "timeoutSeconds": 30
+        },
+        "livenessProbe": {
+          "initialDelaySeconds": 5,
+          "timeoutSeconds": 30
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "integerOrString": {
+      "anyOf": [
+        { "type": "integer" },
+        { "type": "string" }
+      ]
+    }
+  },
+  "properties": {
+    "PAAS_PLATFORM": {
+      "$id": "#/properties/PAAS_PLATFORM",
+      "type": "string",
+      "title": "The PAAS_PLATFORM schema",
+      "description": "PaaS Platform.",
+      "examples": [
+        "KUBERNETES",
+        "OPENSHIFT"
+      ],
+      "internal": true
+    },
+    "PAAS_VERSION": {
+      "$id": "#/properties/PAAS_VERSION",
+      "type": "string",
+      "title": "The PAAS_VERSION schema",
+      "description": "This parameter specify paas where this service is deployed.",
+      "default": "",
+      "internal": true
+    },
+    "NAMESPACE": {
+      "$id": "#/properties/NAMESPACE",
+      "type": "string",
+      "title": "The NAMESPACE scheme",
+      "description": "The namespace it is going to be deployed.",
+      "internal": true
+    },
+    "CERTIFICATE_BUNDLE_MD5SUM": {
+      "$id": "#/properties/CERTIFICATE_BUNDLE_MD5SUM",
+      "type": "string",
+      "title": "The CERTIFICATE_BUNDLE_MD5SUM schema",
+      "examples": [
+        "d41d8cd98f00b204e9800998ecf8427e"
+      ],
+      "internal": true
+    },
+    "MONITORING_ENABLED": {
+      "$id": "#/properties/MONITORING_ENABLED",
+      "type": "boolean",
+      "title": "The MONITORING_ENABLED schema",
+      "description": "Is monitoring enabled",
+      "examples": [
+        false
+      ]
+    },
+    "INTERNAL_TLS_ENABLED": {
+      "$id": "#/properties/INTERNAL_TLS_ENABLED",
+      "type": "boolean",
+      "title": "The INTERNAL_TLS_ENABLED schema",
+      "description": "Is TLS enabled",
+      "examples": [
+        false
+      ],
+      "internal": true
+    },
+    "IMAGE_REPOSITORY": {
+      "$id": "#/properties/IMAGE_REPOSITORY",
+      "type": "string",
+      "title": "The IMAGE_REPOSITORY schema",
+      "default": "",
+      "internal": true
+    },
+    "SSL_SECRET": {
+      "$id": "#/properties/SSL_SECRET",
+      "type": "string",
+      "title": "The SSL_SECRET schema",
+      "description": "SSL secret name.",
+      "examples": [
+        "defaultsslcertificate"
+      ],
+      "internal": true
+    },
+    "ARTIFACT_DESCRIPTOR_VERSION": {
+      "$id": "#/properties/ARTIFACT_DESCRIPTOR_VERSION",
+      "type": "string",
+      "title": "The ARTIFACT_DESCRIPTOR_VERSION schema",
+      "description": "Artifact descriptor version which is installed.",
+      "default": "",
+      "internal": true
+    },
+    "REPLICAS": {
+      "$id": "#/properties/REPLICAS",
+      "type": "integer",
+      "title": "The REPLICAS schema",
+      "internal": true,
+      "envSpecific": true
+    },
+    "MEMORY_LIMIT": {
+      "$id": "#/properties/MEMORY_LIMIT",
+      "type": "string",
+      "title": "The MEMORY_LIMIT schema",
+      "internal": true,
+      "envSpecific": true
+    },
+    "CPU_REQUEST": {
+      "$id": "#/properties/CPU_REQUEST",
+      "$ref": "#/definitions/integerOrString",
+      "title": "The CPU_REQUEST schema",
+      "internal": true,
+      "envSpecific": true
+    },
+    "CPU_LIMIT": {
+      "$id": "#/properties/CPU_LIMIT",
+      "$ref": "#/definitions/integerOrString",
+      "title": "The CPU_LIMIT schema",
+      "internal": true,
+      "envSpecific": true
+    },
+    "M2MType": {
+      "$id": "#/properties/M2MType",
+      "type": "string",
+      "title": "The M2MType schema",
+      "examples": [
+        "keycloak"
+      ],
+      "internal": true
+    },
+    "CLOUD_API_HOST": {
+      "$id": "#/properties/CLOUD_API_HOST",
+      "type": "string",
+      "title": "The CLOUD_API_HOST schema",
+      "description": "API Server DNS",
+      "default": "",
+      "internal": true
+    },
+    "CLOUD_API_PORT": {
+      "$id": "#/properties/CLOUD_API_PORT",
+      "$ref": "#/definitions/integerOrString",
+      "title": "The CLOUD_API_PORT schema",
+      "description": "API Server Port",
+      "default": "6443",
+      "internal": true
+    },
+    "CLOUD_PROTOCOL":  {
+      "$id": "#/properties/CLOUD_PROTOCOL",
+      "type": "string",
+      "title": "The CLOUD_PROTOCOL schema",
+      "description": "Protocol used to access ingress/route",
+      "default": "https",
+      "internal": true
+    },
+    "CLOUD_PUBLIC_HOST": {
+      "$id": "#/properties/CLOUD_PUBLIC_HOST",
+      "type": "string",
+      "title": "The CLOUD_PUBLIC_HOST schema",
+      "description": "PaaS server hostname (Cloud Public host in devops configuration plugin), is used for creating tenant routes.",
+      "default": "",
+      "internal": true
+    },
+    "VAULT_INTEGRATION": {
+      "$id": "#/properties/VAULT_INTEGRATION",
+      "type": "boolean",
+      "title": "The VAULT_INTEGRATION schema",
+      "description": "Is integration with Vault enabled.",
+      "examples": [
+        false
+      ]
+    },
+    "TRACING_ENABLED": {
+      "$id": "#/properties/TRACING_ENABLED",
+      "type": "boolean",
+      "title": "The TRACING_ENABLED schema",
+      "description": "Is tracing enabled",
+      "examples": [
+        false
+      ]
+    },
+    "TRACING_HOST": {
+      "$id": "#/properties/TRACING_HOST",
+      "type": "string",
+      "title": "The TRACING_HOST schema",
+      "description": "Tracing server host",
+      "default": "nc-diagnostic-agent"
+    },
+    "TRACING_SAMPLER_RATELIMITING": {
+      "$id": "#/properties/TRACING_SAMPLER_RATELIMITING",
+      "type": "integer",
+      "title": "The TRACING_SAMPLER_RATELIMITING schema",
+      "description": "The rate for requests sampling (number of traces per second)",
+      "default": 10
+    },
+    "READONLY_CONTAINER_FILE_SYSTEM_ENABLED": {
+      "$id": "#/properties/READONLY_CONTAINER_FILE_SYSTEM_ENABLED",
+      "type": "boolean",
+      "title": "The READONLY_CONTAINER_FILE_SYSTEM_ENABLED schema",
+      "description": "Read-only container file system is enabled",
+      "examples": [
+        false
+      ]
+    },
+    "CLOUD_TOPOLOGY_KEY": {
+      "$id": "#/properties/CLOUD_TOPOLOGY_KEY",
+      "type": "string",
+      "title": "The CLOUD_TOPOLOGY_KEY schema",
+      "description": "Affinity key.",
+      "examples": [
+        "kubernetes.io/hostname"
+      ]
+    },
+    "TAG": {
+      "$id": "#/properties/TAG",
+      "type": "string",
+      "title": "The TAG schema",
+      "default": "",
+      "internal": true
+    },
+    "VAULT_ADDR": {
+      "$id": "#/properties/VAULT_ADDR",
+      "type": "string",
+      "title": "The VAULT_ADDR schema",
+      "description": "Vault address",
+      "internal": true
+    },
+    "CONSUL_ENABLED": {
+      "$id": "#/properties/CONSUL_ENABLED",
+      "type": "boolean",
+      "title": "The CONSUL_ENABLED schema",
+      "description": "Consul is enabled",
+      "internal": true
+    },
+    "CONSUL_URL": {
+      "$id": "#/properties/CONSUL_URL",
+      "type": "string",
+      "title": "The CONSUL_URL schema",
+      "description": "Consul URL",
+      "internal": true
+    },
+    "CONSUL_PUBLIC_URL": {
+      "$id": "#/properties/CONSUL_PUBLIC_URL",
+      "type": "string",
+      "title": "The CONSUL_PUBLIC_URL schema",
+      "description": "Consul public route",
+      "internal": true
+    },
+    "CONSUL_ADMIN_TOKEN": {
+      "$id": "#/properties/CONSUL_ADMIN_TOKEN",
+      "type": "string",
+      "title": "The CONSUL_ADMIN_TOKEN schema",
+      "description": "Consul admin token",
+      "internal": true
+    },
+    "keyManager": {
+      "$id": "#/properties/keyManager",
+      "type": "object",
+      "title": "The keyManager schema",
+      "description": "Some key manager internal timings.",
+      "default": {},
+      "examples": [
+        {
+          "readinessProbe": {
+            "initialDelaySeconds": 5,
+            "timeoutSeconds": 30
+          },
+          "livenessProbe": {
+            "initialDelaySeconds": 5,
+            "timeoutSeconds": 30
+          }
+        }
+      ],
+      "required": [
+        "readinessProbe",
+        "livenessProbe"
+      ],
+      "properties": {
+        "readinessProbe": {
+          "$id": "#/properties/keyManager/properties/readinessProbe",
+          "type": "object",
+          "title": "The readinessProbe schema",
+          "default": {},
+          "required": [
+            "initialDelaySeconds",
+            "timeoutSeconds"
+          ],
+          "properties": {
+            "initialDelaySeconds": {
+              "$id": "#/properties/keyManager/properties/readinessProbe/properties/initialDelaySeconds",
+              "type": "integer",
+              "title": "The initialDelaySeconds schema",
+              "internal": true
+            },
+            "timeoutSeconds": {
+              "$id": "#/properties/keyManager/properties/readinessProbe/properties/timeoutSeconds",
+              "type": "integer",
+              "title": "The timeoutSeconds schema",
+              "internal": true
+            }
+          },
+          "additionalProperties": true
+        },
+        "livenessProbe": {
+          "$id": "#/properties/keyManager/properties/livenessProbe",
+          "type": "object",
+          "title": "The livenessProbe schema",
+          "default": {},
+          "required": [
+            "initialDelaySeconds",
+            "timeoutSeconds"
+          ],
+          "properties": {
+            "initialDelaySeconds": {
+              "$id": "#/properties/keyManager/properties/livenessProbe/properties/initialDelaySeconds",
+              "type": "integer",
+              "title": "The initialDelaySeconds schema",
+              "internal": true
+            },
+            "timeoutSeconds": {
+              "$id": "#/properties/keyManager/properties/livenessProbe/properties/timeoutSeconds",
+              "type": "integer",
+              "title": "The timeoutSeconds schema",
+              "internal": true
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "LOG_LEVEL": {
+      "$id": "#/properties/LOG_LEVEL",
+      "type": "string",
+      "title": "The LOG_LEVEL schema",
+      "description": "Log level for service.",
+      "default": "info",
+      "examples": [
+        "info", "debug", "warn"
+      ],
+      "internal": true
+    },
+    "SERVICE_NAME": {
+      "$id": "#/properties/SERVICE_NAME",
+      "type": "string",
+      "title": "The SERVICE_NAME schema",
+      "description": "Name of a service.",
+      "internal": true
+    }
+  },
+  "additionalProperties": true
+}

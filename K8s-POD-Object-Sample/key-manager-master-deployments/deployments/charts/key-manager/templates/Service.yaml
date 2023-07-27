@@ -1,0 +1,33 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: '{{ .Values.SERVICE_NAME }}'
+  annotations:
+    netcracker.cloud/start.stage: '0'
+spec:
+  ports:
+    -   name: web
+        port: 8080
+        targetPort: 8080
+    -   name: tls
+        port: 8443
+        targetPort: 8443
+  selector:
+    name: 'static-core-gateway'
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: '{{ .Values.SERVICE_NAME }}-internal'
+  labels:
+    name: '{{ .Values.SERVICE_NAME }}-internal'
+  annotations:
+    netcracker.cloud/start.stage: '0'
+spec:
+  ports:
+    -   name: web
+        port: {{ if .Values.INTERNAL_TLS_ENABLED }} 8443 {{ else }} 8080 {{ end }}
+        targetPort: {{ if .Values.INTERNAL_TLS_ENABLED }} 8443 {{ else }} 8080 {{ end }}
+  selector:
+    name: '{{ .Values.SERVICE_NAME }}'

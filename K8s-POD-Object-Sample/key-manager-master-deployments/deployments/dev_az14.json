@@ -1,0 +1,6 @@
+{
+  "MEMORY_LIMIT": "50Mi",
+  "CPU_REQUEST": "50m",
+  "CPU_LIMIT": "100m",
+  "REPLICAS": 1
+}
