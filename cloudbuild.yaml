@@ -3,10 +3,11 @@ steps:
   args: ['clone', 'https://github.com/vipa0120/DemoRepo.git']
 
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t' 'gcr.io/${_PROJECT_ID}/${_IMAGE_NAME}:$SHORT_SHA', '.']
+  args: ['build', '-t', 'gcr.io/${_PROJECT_ID}/${_IMAGE_NAME}:$SHORT_SHA', '.']
 
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/${_PROJECT_ID}/${_IMAGE_NAME}:$SHOER_SHA']
+  args: ['push', 'gcr.io/${_PROJECT_ID}/${_IMAGE_NAME}:$SHORT_SHA']
+
 
   substitutions:
    _IMAGE_NAME: gke-image
