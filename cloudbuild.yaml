@@ -9,7 +9,7 @@ steps:
   args: ['push', 'gcr.io/${_PROJECT_ID}/${_IMAGE_NAME}:${_SHORT_SHA}']
 
 options:
-  logging: NONE  # Or use NONE if you don't want any logging.
+  logging: CLOUD_LOGGING_ONLY  # Or use NONE if you don't want any logging.
   
 substitutions:
   _IMAGE_NAME: 'gke-image'
