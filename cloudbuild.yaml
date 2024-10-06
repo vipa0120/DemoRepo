@@ -13,5 +13,5 @@ options:
   
 substitutions:
   _IMAGE_NAME: 'gke-image'
-  _SHORT_SHA: 'v11.0'
+  _SHORT_SHA: 'v12.0'
   _PROJECT_ID: 'test-ci-cd-437808'
