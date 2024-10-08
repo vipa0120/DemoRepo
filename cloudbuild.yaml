@@ -14,7 +14,7 @@ steps:
     'image',
     'deployment',
     'cicd-deploy',
-    'cicd-image-sha256-1=gcr.io/${_PROJECT_ID}/${_IMAGE_NAME}:$SHORT_SHA'
+    'cicd-image-sha256-1=gcr.io/${_PROJECT_ID}/${_IMAGE_NAME}:${_SHORT_SHA}'
     ]
   env:
   - 'CLOUDSDK_COMPUTE_ZONE=asia-south1-a'
@@ -25,5 +25,5 @@ options:
   
 substitutions:
   _IMAGE_NAME: 'gke-image'
-  _SHORT_SHA: 'v80.80'
+  _SHORT_SHA: 'v80.81'
   _PROJECT_ID: 'test-ci-cd-437808'
