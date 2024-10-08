@@ -7,6 +7,7 @@ steps:
 
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'gcr.io/${_PROJECT_ID}/${_IMAGE_NAME}:${_SHORT_SHA}']
+  
 - name: 'gcr.io/cloud-builders/kubectl'
   args: [
     'set',
