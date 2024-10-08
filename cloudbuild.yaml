@@ -14,7 +14,7 @@ steps:
     'image',
     'deployment',
     'cicd-deploy',
-    'gke-image-sha256-1=gcr.io/${_PROJECT_ID}/${_IMAGE_NAME}:${_SHORT_SHA}'
+    'gke-image-sha256-1=gcr.io/${_PROJECT_ID}/${_IMAGE_NAME}:${SHORT_SHA}'
     ]
   env:
   - 'CLOUDSDK_COMPUTE_ZONE=asia-south1-a'
