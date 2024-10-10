@@ -32,6 +32,4 @@ substitutions:
   _IMAGE_NAME: 'gke-image'
   _PROJECT_ID: 'test-ci-cd-437808'
 
-# Specify the Docker image with the SHORT_SHA tag
-images:
-  - 'gcr.io/${_PROJECT_ID}/${_IMAGE_NAME}:${SHORT_SHA}'
+
